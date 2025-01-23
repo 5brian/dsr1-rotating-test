@@ -12,7 +12,16 @@ export default function Index() {
   const ballRadius = 20;
   const boundarySize = 300;
 
-  // Square rotation effect
+  // Track position using a ref and listener
+  const positionRef = useRef({ x: 150, y: 150 });
+
+  useEffect(() => {
+    const listenerId = ballPosition.addListener((value) => {
+      positionRef.current = value;
+    });
+    return () => ballPosition.removeListener(listenerId);
+  }, []);
+
   useEffect(() => {
     Animated.loop(
       Animated.timing(rotateAnim, {
@@ -32,8 +41,8 @@ export default function Index() {
       lastUpdate.current = now;
 
       const deltaSeconds = deltaTime / 1000;
-      const currentX = ballPosition.x._value;
-      const currentY = ballPosition.y._value;
+      const currentX = positionRef.current.x;
+      const currentY = positionRef.current.y;
 
       let newX = currentX + velocity.current.x * deltaSeconds;
       let newY = currentY + velocity.current.y * deltaSeconds;
